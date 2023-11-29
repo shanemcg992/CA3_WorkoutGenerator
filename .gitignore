@@ -53,9 +53,7 @@ ScaffoldingReadMe.txt
 
 # Ignore generated files from Visual Studio
 *.cache
-*.csproj
 *.vs
-*.csproj.user
 *.launchSettings.json
 
 # Ignore Blazor WASM build outputs
