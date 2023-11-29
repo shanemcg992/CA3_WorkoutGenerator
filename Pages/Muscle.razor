@@ -1,0 +1,180 @@
+﻿@page "/exercise-selector"
+@inject HttpClient HttpClient
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Web
+
+
+
+<div class="container mt-3">
+    <h1 class="display-4 text-center">Exercise Selector</h1>
+
+    <div class="my-4">
+        <select class="form-control" @onchange="HandleMuscleGroupChange">
+            <option value="">Select Muscle Group</option>
+            @foreach (var muscleGroup in muscleGroups)
+            {
+                <option value="@muscleGroup">@muscleGroup</option>
+            }
+        </select>
+    </div>
+
+    @if (!string.IsNullOrEmpty(selectedMuscle))
+    {
+        <h2 class="my-3">Selected Muscle Group: @selectedMuscle</h2>
+        <div class="list-group">
+        @foreach (var exercise in selectedMuscleExercises)
+            {
+                <button @onclick="@(e => OpenModal(exercise))" @onclick:preventDefault class="list-group-item list-group-item-action">
+                    @exercise.Name
+                </button>
+            }
+        </div>
+    }
+
+    <div class="my-4">
+        <button class="btn btn-primary" @onclick="GenerateRandomWorkout">Generate Workout of the Day</button>
+    </div>
+
+
+
+    @if (workoutOfTheDay.Count > 0)
+    {
+        <div class="container mt-3">
+            <h2>Workout of the Day</h2>
+            <div class="list-group">
+                @foreach (var exercise in workoutOfTheDay)
+                {
+                    <button @onclick="@(e => OpenModal(exercise))" class="list-group-item list-group-item-action">
+                        @exercise.Name
+                    </button>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Exercise Detail Modal -->
+    @if (selectedExercise != null)
+    {
+        <div class="modal" style="display:@(showModal ? "block" : "none"); background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@selectedExercise.Name</h5>
+                        <button type="button" class="close" @onclick="CloseModal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Type:</strong> @selectedExercise.Type</p>
+                        <p><strong>Muscle Targeted:</strong> @selectedExercise.Muscle</p>
+                        <p><strong>Equipment Needed:</strong> @selectedExercise.Equipment</p>
+                        <p><strong>Difficulty Level:</strong> @selectedExercise.Difficulty</p>
+                        <p>@selectedExercise.Instructions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+
+    private Random random = new Random();
+    private List<Exercise> workoutOfTheDay = new List<Exercise>();
+    private const int NumberOfExercisesInWorkout = 5; // You can adjust this number
+
+    private void GenerateRandomWorkout()
+    {
+        workoutOfTheDay.Clear();
+
+        if (selectedMuscleExercises.Count == 0 || selectedMuscleExercises.Count < NumberOfExercisesInWorkout)
+        {
+            // Handle the case where there are not enough exercises to choose from
+            workoutOfTheDay.AddRange(selectedMuscleExercises);
+        }
+        else
+        {
+            while (workoutOfTheDay.Count < NumberOfExercisesInWorkout)
+            {
+                var randomExercise = selectedMuscleExercises[random.Next(selectedMuscleExercises.Count)];
+                if (!workoutOfTheDay.Contains(randomExercise))
+                {
+                    workoutOfTheDay.Add(randomExercise);
+                }
+            }
+        }
+
+        StateHasChanged(); // Update the UI with the new workout
+    }
+    private string selectedMuscle = "";
+    private List<string> muscleGroups = new List<string> { "abdominals", "abductors", "adductors", "biceps", "calves",
+    "chest", "forearms", "glutes", "hamstrings", "lats", "lower_back", "middle_back", "neck", "quadriceps", "traps",
+    "triceps" };
+    private List<Exercise> selectedMuscleExercises = new List<Exercise>();
+    private Exercise selectedExercise; // To keep track of the selected exercise for the modal
+    private bool showModal = false; // To show or hide the modal
+
+    protected override async Task OnInitializedAsync()
+    {
+        HttpClient.DefaultRequestHeaders.Add("X-RapidAPI-Key", "03377d1198msh8b4f97fbb46ea41p1c3c79jsncdd342596b81");
+        HttpClient.DefaultRequestHeaders.Add("X-RapidAPI-Host", "exercises-by-api-ninjas.p.rapidapi.com");   
+    }
+
+    private async Task FetchExercisesByMuscleGroup(string muscleGroup)
+    {
+        selectedMuscleExercises.Clear();
+        if (string.IsNullOrEmpty(muscleGroup))
+        {
+            return;
+        }
+
+        var url = $"https://exercises-by-api-ninjas.p.rapidapi.com/v1/exercises?muscle={muscleGroup}";
+
+        try
+        {
+            var response = await HttpClient.GetFromJsonAsync<List<Exercise>>(url);
+            if (response != null)
+            {
+                selectedMuscleExercises = response;
+            }
+            StateHasChanged(); // Refresh the UI to display the new exercises
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error fetching exercises: " + ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleMuscleGroupChange(ChangeEventArgs e)
+    {
+        selectedMuscle = e.Value.ToString();
+        await FetchExercisesByMuscleGroup(selectedMuscle);
+    }
+
+    private void OpenModal(Exercise exercise)
+    {
+        selectedExercise = exercise;
+        showModal = true;
+    }
+
+
+
+    private void CloseModal()
+    {
+        showModal = false;
+    }
+
+    public class Exercise
+    {
+        public string Name { get; set; }
+        public string Type { get; set; } // Assuming these properties are in the response
+        public string Muscle { get; set; }
+        public string Equipment { get; set; }
+        public string Difficulty { get; set; }
+        public string Instructions { get; set; }
+    }
+}
