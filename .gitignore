@@ -1,0 +1,72 @@
+# Ignore all bin and obj folders
+**/bin/
+**/obj/
+
+# Ignore all files with a .log extension
+*.log
+
+# Ignore the node_modules folder (if you use it for some frontend package management)
+node_modules/
+
+# Ignore build output directory
+dist/
+
+# Ignore Visual Studio temporary files and build results
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userprefs
+*.sln.docstates
+
+# Ignore Visual Studio Code files
+.vscode/
+
+# Ignore the build results of Visual Studio
+*.swp
+*.*proj.user
+*.[Oo]rdered[Tt]est
+*.[Ss]ervice[Uu]ser
+*.mdf
+*.ldf
+*.trx
+*.vspscc
+*_i.c
+*_p.c
+*.vcxproj
+*.vcxproj.filters
+*.diff
+*.sdf
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ignore ASP.NET Scaffolding generate files
+ScaffoldingReadMe.txt
+
+# Ignore files and folders for ASP.NET Core projects
+**/wwwroot/lib/
+**/wwwroot/_content/
+**/.vs/
+**/Properties/launchSettings.json
+
+# Ignore generated files from Visual Studio
+*.cache
+*.csproj
+*.vs
+*.csproj.user
+*.launchSettings.json
+
+# Ignore Blazor WASM build outputs
+pwa/
+service-worker.js
+
+# Ignore typical .NET Core and ASP.NET Core folders
+**/Properties/launchSettings.json
+
+# Ignore the local settings file (if you're using ASP.NET Core)
+appsettings.Local.json
+
+# Ignore macOS system files
+.DS_Store
