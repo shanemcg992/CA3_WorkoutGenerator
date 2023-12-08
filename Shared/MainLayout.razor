@@ -3,12 +3,26 @@
 @using System.Text.Json
 @using Microsoft.AspNetCore.Components.Web
 
-
-
+<!-- Main container for the Workout Generator page -->
 <div class="container mt-3">
-    <h1 class="display-4 text-center">Workout Generator</h1>
+    <!-- Page title -->
+    <h1 class="display-4 text-centre">Workout Generator</h1>
+    <input type="text" class="form-control search-input mb-3" placeholder="Search for a muscle group..." @bind="searchTerm" @oninput="UpdateSearchResults" />
 
-    <div class="my-4">
+    @if (searchResults.Any())
+    {
+        <div class="search-results-container">
+            @foreach (var result in searchResults)
+            {
+                <div class="search-result-item" @onclick="() => SelectSearchResult(result)">
+                    @result
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Dropdown for selecting muscle groups -->
+    @* <div class="my-4">
         <select class="form-control" @onchange="HandleMuscleGroupChange">
             <option value="">Select Muscle Group</option>
             @foreach (var muscleGroup in muscleGroups)
@@ -16,14 +30,16 @@
                 <option value="@muscleGroup">@muscleGroup</option>
             }
         </select>
-    </div>
+    </div> *@
 
+    <!-- Displays selected muscle group and list of exercises -->
     @if (!string.IsNullOrEmpty(selectedMuscle))
     {
         <h2 class="my-3">Selected Muscle Group: @selectedMuscle</h2>
         <div class="list-group">
-        @foreach (var exercise in selectedMuscleExercises)
+            @foreach (var exercise in selectedMuscleExercises)
             {
+                <!-- Button to open modal with exercise details -->
                 <button @onclick="@(e => OpenModal(exercise))" @onclick:preventDefault class="list-group-item list-group-item-action">
                     @exercise.Name
                 </button>
@@ -31,12 +47,12 @@
         </div>
     }
 
-    <!-- Generate Workout of the Day Button -->
+    <!-- Button to generate a random workout for the day -->
     <div class="my-4">
         <button class="btn btn-primary" @onclick="GenerateRandomWorkout">Generate Workout of the Day</button>
     </div>
 
-    <!-- Workout of the Day List -->
+    <!-- Displays the workout of the day if there are any -->
     @if (workoutOfTheDay.Count > 0)
     {
         <div class="container mt-3">
@@ -44,6 +60,7 @@
             <div class="list-group">
                 @foreach (var exercise in workoutOfTheDay)
                 {
+                    <!-- Button to open modal with exercise details -->
                     <button @onclick="@(e => OpenModal(exercise))" class="list-group-item list-group-item-action">
                         @exercise.Name
                     </button>
@@ -52,16 +69,33 @@
         </div>
     }
 
-    <br>
+<!-- Section for user to select workout days -->
+<div class="row my-3">
+    <div class="col-12">
+        <h4>Select Workout Days:</h4>
+        @foreach (var day in allDays)
+        {
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="@day" 
+       checked="@selectedDays[day]" @onchange="@(e => OnDayCheckboxChanged(e, day))" />
+                <label class="form-check-label" for="@day">@day</label>
+            </div>
+        }
+    </div>
+</div>
 
+@if (selectedDays.Any(day => day.Value)) // Checks if any day is selected
+{
+    <!-- Section to select muscle groups for the selected days of the week -->
     <h2 class="mb-3">Select Muscle Groups for the Week</h2>
     <div class="row">
-        @foreach (var day in weekDays)
+        @foreach (var day in selectedDays.Where(kv => kv.Value).Select(kv => kv.Key))
         {
             <div class="col-md-4 mb-3">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">@day</h5>
+                        <!-- Dropdown to select a muscle group for each day -->
                         <select class="form-control" @onchange="@(e => UpdateMuscleGroupSelection(day, e.Value.ToString()))">
                             <option value="">Select Muscle Group</option>
                             @foreach (var muscleGroup in muscleGroups)
@@ -75,20 +109,25 @@
         }
     </div>
 
+    <!-- Button to generate the weekly workout plan -->
     <div class="text-center mt-4">
         <button class="btn btn-primary" @onclick="GenerateWeeklyWorkoutPlan">Generate Weekly Workout Plan</button>
     </div>
+}
 
+    <!-- Displays the weekly workout plan -->
     @if (weeklyWorkoutPlan.Count > 0)
     {
         <div class="container mt-3">
             <h2>Weekly Workout Plan</h2>
             @foreach (var day in weeklyWorkoutPlan.Keys)
             {
+                <!-- Retrieves the muscle group and associated image for the day -->
                 var muscleGroup = selectedMuscleGroupsForWeek[day];
                 var imagePath = muscleGroupImages.ContainsKey(muscleGroup) ? muscleGroupImages[muscleGroup] : "";
                 <div class="my-3">
                     <h3>@day - @muscleGroup</h3>
+                    <!-- Displays muscle group image if available -->
                     @if (!string.IsNullOrEmpty(imagePath))
                     {
                         <img src="@imagePath" alt="@muscleGroup" class="muscle-group-image" />
@@ -96,6 +135,7 @@
                     <div class="list-group">
                         @foreach (var exercise in weeklyWorkoutPlan[day])
                         {
+                            <!-- Button to open modal with exercise details -->
                             <button @onclick="@(e => OpenModal(exercise))" class="list-group-item list-group-item-action">
                                 @exercise.Name
                             </button>
@@ -106,8 +146,7 @@
         </div>
     }
 
-
-    <!-- Exercise Detail Modal -->
+    <!-- Modal for showing exercise details -->
     @if (selectedExercise != null)
     {
         <div class="modal" style="display:@(showModal ? "block" : "none"); background-color: rgba(0,0,0,0.5);">
@@ -115,11 +154,13 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">@selectedExercise.Name</h5>
+                        <!-- Button to close the modal -->
                         <button type="button" class="close" @onclick="CloseModal">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
+                        <!-- Details of the selected exercise -->
                         <p><strong>Type:</strong> @selectedExercise.Type</p>
                         <p><strong>Muscle Targeted:</strong> @selectedExercise.Muscle</p>
                         <p><strong>Equipment Needed:</strong> @selectedExercise.Equipment</p>
@@ -140,15 +181,77 @@
     private Dictionary<string, string> selectedMuscleGroupsForWeek;
     private const int NumberOfExercisesInWorkout = 5; // You can adjust this number
 
+    private Dictionary<string, bool> selectedDays = new Dictionary<string, bool>();
+    private List<string> allDays = new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+
+    private string searchTerm = string.Empty;
+    private List<string> searchResults = new List<string>();
+
+    private void UpdateSearchResults(ChangeEventArgs e)
+    {
+        searchTerm = e.Value.ToString();
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            searchResults = muscleGroups.Where(m => m.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        else
+        {
+            searchResults.Clear();
+        }
+    }
+
+    // Method called on input event of search field
+    private void SearchMuscleGroups(ChangeEventArgs e)
+    {
+        searchTerm = e.Value.ToString();
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            searchResults = muscleGroups.Where(m => m.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        else
+        {
+            searchResults.Clear();
+        }
+    }
+
+        // Method called when a search result is selected
+    private async Task SelectSearchResult(string muscleGroup)
+    {
+        selectedMuscle = muscleGroup;
+        selectedMuscleExercises = await FetchExercisesByMuscleGroup(muscleGroup);
+        // Clear search term and results after selection
+        searchTerm = string.Empty;
+        searchResults.Clear();
+        StateHasChanged(); // This will update the UI accordingly
+    }
+
+    // Async method to fetch exercises by muscle group
+    private async Task FetchMuscleGroupExercises()
+    {
+        if (!string.IsNullOrEmpty(selectedMuscle))
+        {
+            selectedMuscleExercises = await FetchExercisesByMuscleGroup(selectedMuscle);
+        }
+        else
+        {
+            selectedMuscleExercises.Clear();
+        }
+    }
+
 
 
     private void UpdateMuscleGroupSelection(string day, string muscleGroup)
     {
-        if (selectedMuscleGroupsForWeek.ContainsKey(day))
+        if (selectedDays[day])
         {
             selectedMuscleGroupsForWeek[day] = muscleGroup;
         }
+        else
+        {
+            selectedMuscleGroupsForWeek.Remove(day);
+        }
     }
+
     private Dictionary<string, List<Exercise>> weeklyWorkoutPlan = new Dictionary<string, List<Exercise>>();
 
         // Method to generate a random workout for the day
@@ -168,6 +271,23 @@
 
         StateHasChanged();
     }
+
+    private void OnDaySelectionChanged(ChangeEventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private void OnDayCheckboxChanged(ChangeEventArgs e, string day)
+    {
+        if (bool.TryParse(e.Value.ToString(), out var isChecked))
+        {
+            selectedDays[day] = isChecked;
+        }
+
+        StateHasChanged();
+    }
+
+
 
     private Dictionary<string, string> muscleGroupImages = new Dictionary<string, string>
     {
@@ -189,33 +309,36 @@
         {"lower_back", "images/lats.webp"},
     };
 
-    // Method to generate the weekly workout plan
-    private async Task GenerateWeeklyWorkoutPlan()
+private async Task GenerateWeeklyWorkoutPlan()
+{
+    // Clear the workouts for any days that are not selected
+    var daysToRemove = weeklyWorkoutPlan.Keys.Except(selectedDays.Where(kv => kv.Value).Select(kv => kv.Key)).ToList();
+    foreach (var day in daysToRemove)
     {
-        weeklyWorkoutPlan.Clear();
-
-        foreach (var day in weekDays)
-        {
-            var muscleGroup = selectedMuscleGroupsForWeek[day];
-            if (!string.IsNullOrEmpty(muscleGroup))
-            {
-                var exercises = await FetchExercisesByMuscleGroup(muscleGroup);
-                if (exercises.Any())
-                {
-                    weeklyWorkoutPlan[day] = exercises.OrderBy(x => random.Next()).Take(NumberOfExercisesInWorkout).ToList();
-                }
-            }
-        }
-
-        StateHasChanged();
+        weeklyWorkoutPlan.Remove(day);
     }
+
+    // generate plan for the selected days
+    foreach (var day in selectedDays.Where(kv => kv.Value))
+    {
+        var muscleGroup = selectedMuscleGroupsForWeek[day.Key];
+        if (!string.IsNullOrEmpty(muscleGroup))
+        {
+            var exercises = await FetchExercisesByMuscleGroup(muscleGroup);
+            weeklyWorkoutPlan[day.Key] = exercises.OrderBy(x => random.Next()).Take(NumberOfExercisesInWorkout).ToList();
+        }
+    }
+
+    StateHasChanged();
+}
+
     private string selectedMuscle = "";
     private List<string> muscleGroups = new List<string> { "abdominals", "abductors", "adductors", "biceps", "calves",
     "chest", "forearms", "glutes", "hamstrings", "lats", "lower_back", "middle_back", "neck", "quadriceps", "traps",
     "triceps" };
     private List<Exercise> selectedMuscleExercises = new List<Exercise>();
-    private Exercise selectedExercise; // To keep track of the selected exercise for the modal
-    private bool showModal = false; // To show or hide the modal
+    private Exercise? selectedExercise;
+    private bool showModal = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -225,6 +348,11 @@
 
         protected override void OnInitialized()
     {
+        // Initialize all days as not selected
+        foreach (var day in allDays)
+        {
+            selectedDays[day] = false;
+        }
         // Initialize the dictionary here, where weekDays is already available
         selectedMuscleGroupsForWeek = weekDays.ToDictionary(day => day, day => string.Empty);
     }
@@ -270,12 +398,12 @@
 
     public class Exercise
     {
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public string Muscle { get; set; }
-        public string Equipment { get; set; }
-        public string Difficulty { get; set; }
-        public string Instructions { get; set; }
+        public string? Name { get; set; }
+        public string? Type { get; set; }
+        public string? Muscle { get; set; }
+        public string? Equipment { get; set; }
+        public string? Difficulty { get; set; }
+        public string? Instructions { get; set; }
     }
 }
 

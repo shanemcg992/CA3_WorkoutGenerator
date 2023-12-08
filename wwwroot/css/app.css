@@ -2,12 +2,13 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    color: #333;
 }
 
 body {
     font-family: 'Arial', sans-serif;
-    background-color: lightgray;
     margin: 10px;
+    background-color: transparent;
 }
 
 main {
@@ -18,14 +19,77 @@ main {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
 }
 
+.search-container {
+    position: relative;
+    width: 40%;
+    max-width: 300px;
+    background: #D4F1F4;
+    color: #05445E; 
+    align-items: center;
+  }
+  
+  .search-input {
+    width: 40%;
+    padding: 10px;
+    border: 1px solid #666; /* Darker border */
+    border-radius: 5px;
+    background: #D4F1F4;
+    color: #05445E; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .search-input:focus {
+    outline: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background: #333;
+    color: white;
+  }
+  
+  .search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden; 
+    z-index: 1000;
+  }
+  
+  .search-result-item {
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: 5px;
+    background-color: #D4F1F4;
+    color: #05445E;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .search-result-item:hover {
+    background-color: #05445E;
+    color: white;
+}
+
 .list-group-item {
     cursor: pointer;
     transition: background-color 0.2s; /* Smooth background color change on hover */
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    background-color: rgba(255, 255, 255, 0.5);
+    color: black;
+    font-weight: bold;
 }
 
 .list-group-item:hover {
-    background-color: #6dd5ed; /* Change background color on hover */
-    color: white; /* Change text color on hover */
+    background-color: #D4F1F4; /* Change background color on hover */
+    color: black; /* Change text color on hover */
 }
 
 .modal {
@@ -43,9 +107,9 @@ main {
 }
 
 .modal-dialog {
-    background: linear-gradient(to right, #6dd5ed, #2193b0); /* Gradient background */
+    background: linear-gradient(to right, orange, #05445E); /* Gradient background */
     border-radius: 15px;
-    animation: scaleUp 0.3s ease-in-out; /* Add an animation when the modal pops up */
+    animation: scaleUp 0.3s ease-in-out;
 }
 
 .modal-content {
@@ -53,14 +117,14 @@ main {
     padding: 20px;
     border: none;
     border-radius: 15px;
-    color: black; /* White text color */
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2); /* Soft shadow for depth */
+    color: black;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 
 .modal-header {
     padding: 0.5rem 1rem;
     border-bottom: 1px solid #dee2e6;
-    background-color: rgba(255, 255, 255, 0.2); /* Slightly transparent white */
+    background-color: rgba(255, 255, 255, 0.2);
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
 }
@@ -88,11 +152,13 @@ main {
 
 .card {
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 .card-title {
     font-size: 1.2rem;
     margin-bottom: 0.75rem;
+    font-weight: bold;
 }
 
 .card-body {
@@ -100,13 +166,13 @@ main {
 }
 
 .muscle-group-image {
-    max-width: 200px; /* or any other size that fits your layout */
+    max-width: 200px;
     height: 200px;
     margin-right: 10px;
 }
 
 
-/* Add any additional styles you want to apply globally to your selects */
+
 select.form-control {
     margin-top: 0.5rem;
 }
@@ -124,14 +190,22 @@ select.form-control {
 
 /* Style the buttons */
 .btn-primary {
-    background-color: #6dd5ed;
+    background-color: #D4F1F4;
     border: none;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Add shadow to buttons */
-    transition: transform 0.1s; /* Smooth transform on click */
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem; 
+    color: #05445E;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s; 
 }
 
 .btn-primary:active {
     transform: translateY(2px); /* Move the button down when clicked */
+}
+
+.btn-primary:hover {
+    background-color: #05445E;
 }
 
 
@@ -148,11 +222,15 @@ select.form-control {
 }
 
 h1.display-4 {
-    color: #007bff; /* Bootstrap primary color */
+    color: #05445E;
 }
 
 h2 {
-    color: #6c757d; /* Bootstrap secondary color */
+    color: #05445E;
+}
+
+h3 {
+    color: white; 
 }
   
   .close:hover,
