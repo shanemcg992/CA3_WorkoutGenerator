@@ -221,6 +221,58 @@ select.form-control {
     padding-top: 2rem;
 }
 
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    width: 100vw; /* Full viewport width */
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #f0f0f0; /* Light background color */
+    z-index: 1000; /* Ensures the spinner is above other content */
+}
+
+.loading-progress {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    position: relative;
+}
+
+.loading-progress circle {
+    fill: none;
+    stroke-width: 5px;
+    stroke: #333;
+    stroke-linecap: round;
+    animation: rotate 2s linear infinite;
+    transform-origin: center;
+}
+
+.loading-progress circle:nth-child(1) {
+    stroke-dasharray: 120px 360px;
+    stroke-dashoffset: 0;
+}
+
+.loading-progress circle:nth-child(2) {
+    stroke-dasharray: 30px 360px;
+    stroke-dashoffset: -120px;
+}
+
+@keyframes rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-progress-text {
+    margin-top: 10px;
+    font-size: 1.2em;
+    color: #333; 
+}
+
+
 h1.display-4 {
     color: #05445E;
 }
