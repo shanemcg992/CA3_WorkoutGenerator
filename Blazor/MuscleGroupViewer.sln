@@ -5,6 +5,8 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MuscleGroupViewer", "MuscleGroupViewer.csproj", "{9927D02A-53CD-4742-B861-B37209501165}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject1", "..\TestProject1\TestProject1.csproj", "{62B71AAA-87E5-4B6F-8D1B-000FEDD899D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,14 @@ Global
 		{9927D02A-53CD-4742-B861-B37209501165}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9927D02A-53CD-4742-B861-B37209501165}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9927D02A-53CD-4742-B861-B37209501165}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA7B073E-DE47-4BE6-9D58-4210529435E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA7B073E-DE47-4BE6-9D58-4210529435E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA7B073E-DE47-4BE6-9D58-4210529435E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA7B073E-DE47-4BE6-9D58-4210529435E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62B71AAA-87E5-4B6F-8D1B-000FEDD899D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62B71AAA-87E5-4B6F-8D1B-000FEDD899D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62B71AAA-87E5-4B6F-8D1B-000FEDD899D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62B71AAA-87E5-4B6F-8D1B-000FEDD899D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
